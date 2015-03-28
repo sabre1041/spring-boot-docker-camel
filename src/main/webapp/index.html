@@ -1,0 +1,95 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<!--
+
+    Licensed to the Apache Software Foundation (ASF) under one or more
+    contributor license agreements.  See the NOTICE file distributed with
+    this work for additional information regarding copyright ownership.
+    The ASF licenses this file to You under the Apache License, Version 2.0
+    (the "License"); you may not use this file except in compliance with
+    the License.  You may obtain a copy of the License at
+
+       http://www.apache.org/licenses/LICENSE-2.0
+
+    Unless required by applicable law or agreed to in writing, software
+    distributed under the License is distributed on an "AS IS" BASIS,
+    WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+    See the License for the specific language governing permissions and
+    limitations under the License.
+
+-->
+
+<html>
+<head>
+    <title>Spring Boot Docker Camel Example</title>
+    <script type='text/javascript'>
+
+        if (!window.WebSocket) {
+        alert("WebSocket not supported by this browser");
+        }
+
+        function $() { return document.getElementById(arguments[0]); }
+
+        var room = {
+        join: function(name) {
+        this._username=name;
+        var location = "ws://localhost:8080/spring-boot-docker-camel/websocket";
+        this._ws=new WebSocket(location);
+        this._ws.onopen=this._onopen;
+        this._ws.onmessage=this._onmessage;
+        this._ws.onclose=this._onclose;
+        },
+
+        _onmessage: function(m) {
+        if (m.data){
+        var chat=$('chat');
+        var spanText = document.createElement('span');
+        spanText.className='text';
+        spanText.innerHTML=m.data;
+        var lineBreak = document.createElement('br');
+        chat.appendChild(spanText);
+        chat.appendChild(lineBreak);
+        chat.scrollTop = chat.scrollHeight - chat.clientHeight;
+        }
+        },
+
+        _onclose: function(m) {
+        this._ws=null;
+    	document.getElementById("status").innerHTML = "DISCONNECTED";
+        },
+
+        _onopen: function(m) {
+        document.getElementById("status").innerHTML = "CONNECTED";
+        }
+
+        };
+
+    </script>
+    <style type='text/css'>
+        div { border: 0px solid black; }
+        div#chat { clear: both; width: 80em; height: 40ex; overflow: auto; background-color: #f0f0f0; padding: 4px; border: 1px solid black; }
+    </style>
+</head>
+<body>
+<h2>Docker Events</h2>
+Events produced by Docker to Websocket connection<br/><br/>
+<div>Status: <span id='status'>DISCONNECTED</span></div>
+<div id='chat'></div>
+
+<div><h2>Docker Operations</h2>
+
+View the JSON response from invoking Docker Operations exposed by Camel
+
+<ul>
+<li><a href="./camel/version" target="_blank">Version</a><br/></li>
+<li><a href="./camel/info" target="_blank">Info</a><br/></li>
+<li><a href="./camel/images" target="_blank">Images</a><br/></li>
+<li><a href="./camel/containers" target="_blank">Containers</a><br/></li>
+
+</ul>
+</div>
+<script type='text/javascript'>
+    room.join("Testing");
+</script>
+</body>
+</html>
