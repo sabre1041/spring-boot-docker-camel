@@ -2,7 +2,6 @@ package com.andyserver.camel.springboot;
 
 import org.apache.camel.component.servlet.CamelHttpTransportServlet;
 import org.springframework.boot.SpringApplication;
-import org.springframework.boot.autoconfigure.EnableAutoConfiguration;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
 import org.springframework.boot.builder.SpringApplicationBuilder;
 import org.springframework.boot.context.embedded.ServletRegistrationBean;
@@ -14,7 +13,6 @@ import org.springframework.web.socket.config.annotation.WebSocketConfigurer;
 import org.springframework.web.socket.config.annotation.WebSocketHandlerRegistry;
 
 @SpringBootApplication
-@EnableAutoConfiguration
 @ComponentScan(basePackages = "com.andyserver.camel")
 @EnableWebSocket
 public class Application extends SpringBootServletInitializer implements WebSocketConfigurer {

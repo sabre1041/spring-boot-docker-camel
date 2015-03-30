@@ -24,43 +24,66 @@
     <title>Spring Boot Docker Camel Example</title>
     <script type='text/javascript'>
 
+        var attempts = 1;
+
         if (!window.WebSocket) {
-        alert("WebSocket not supported by this browser");
+            alert("WebSocket not supported by this browser");
         }
+
+        function generateInterval (k) {
+             var maxInterval = (Math.pow(2, k) - 1) * 1000;
+
+              if (maxInterval > 30*1000) {
+                maxInterval = 30*1000; // If the generated interval is more than 30 seconds, truncate it down to 30 seconds.
+              }
+
+              // generate the interval to a random number between 0 and the maxInterval determined from above
+              return Math.random() * maxInterval;
+            }
 
         function $() { return document.getElementById(arguments[0]); }
 
-        var room = {
-        join: function(name) {
-        this._username=name;
-        var location = "ws://localhost:8080/spring-boot-docker-camel/websocket";
-        this._ws=new WebSocket(location);
-        this._ws.onopen=this._onopen;
-        this._ws.onmessage=this._onmessage;
-        this._ws.onclose=this._onclose;
-        },
+        var websockets = {
+	        create: function() {
+		        var location = "ws://localhost:8080/spring-boot-docker-camel/websocket";
+                this._ws=new WebSocket(location);
+                this._ws.onopen=this._onopen;
+                this._ws.onmessage=this._onmessage;
+                this._ws.onclose=this._onclose;
+		    },
 
-        _onmessage: function(m) {
-        if (m.data){
-        var chat=$('chat');
-        var spanText = document.createElement('span');
-        spanText.className='text';
-        spanText.innerHTML=m.data;
-        var lineBreak = document.createElement('br');
-        chat.appendChild(spanText);
-        chat.appendChild(lineBreak);
-        chat.scrollTop = chat.scrollHeight - chat.clientHeight;
-        }
-        },
+	        _onmessage: function(m) {
 
-        _onclose: function(m) {
-        this._ws=null;
-    	document.getElementById("status").innerHTML = "DISCONNECTED";
-        },
+		        if (m.data) {
+			        var chat=$('chat');
+			        var spanText = document.createElement('span');
+			        spanText.className='text';
+			        spanText.innerHTML=m.data;
+			        var lineBreak = document.createElement('br');
+			        chat.appendChild(spanText);
+			        chat.appendChild(lineBreak);
+			        chat.scrollTop = chat.scrollHeight - chat.clientHeight;
+		        }
+	        },
 
-        _onopen: function(m) {
-        document.getElementById("status").innerHTML = "CONNECTED";
-        }
+	        _onclose: function(m) {
+		        this._ws=null;
+		        document.getElementById("status").innerHTML = "DISCONNECTED";
+		        var time = generateInterval(attempts);
+		        setTimeout(function () {
+		            // We've tried to reconnect so increment the attempts by 1
+		            attempts++;
+
+		            // Connection has closed so try to reconnect every 10 seconds.
+		            websockets.create();
+		        }, time);
+
+	        },
+
+	        _onopen: function(m) {
+	            attempts = 1;
+	            document.getElementById("status").innerHTML = "CONNECTED";
+	        }
 
         };
 
@@ -89,7 +112,7 @@ View the JSON response from invoking Docker Operations exposed by Camel
 </ul>
 </div>
 <script type='text/javascript'>
-    room.join("Testing");
+    websockets.create();
 </script>
 </body>
 </html>

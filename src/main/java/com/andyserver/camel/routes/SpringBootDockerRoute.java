@@ -15,10 +15,14 @@ public class SpringBootDockerRoute extends RouteBuilder {
 		restConfiguration().component("servlet").port(8080);
 
 		// Expose Endpoints
-		rest("/").bindingMode(RestBindingMode.json)
-				.produces("application/json").get("/{type}")
-				.to("direct:restdocker").get("/").route().setHeader("type")
-				.constant("info").to("direct:restdocker").endRest();
+		rest("/").bindingMode(RestBindingMode.json).produces("application/json")
+			.get("/{type}").to("direct:restdocker")
+			.get("/")
+				.route()
+					.setHeader("type")
+						.constant("info")
+					.to("direct:restdocker")
+			.endRest();
 		
 		// Globally handle exceptions
 		onException(Exception.class)
